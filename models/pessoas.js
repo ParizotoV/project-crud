@@ -1,55 +1,32 @@
-const findAll = (connection) => {
-  return new Promise((resolve, reject) => {
-    connection.query('SELECT * FROM pessoas', (err, results) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(results)
-      }
-    })
-  })
+const findAll = async (db) => {
+  const pessoas = await db('pessoas').select('*')
+  return pessoas;
 }
 
-const findById = (connection, id) => {
-  return new Promise((resolve, reject) => {
-    console.log('ID>>:', id)
-    connection.query('SELECT * FROM pessoas WHERE id = ' + id, (err, results) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve(results)
-      }
-    })
-  })
+const findById = async (db, id) => {
+  const pessoa = await db('pessoas').where({ id }).select('*')
+  if (pessoa.length > 0) {
+    return pessoa[0]
+  }
+  return {};
 }
 
-const deleteById = (connection, id) => {
-  return new Promise((resolve, reject) => {
-    connection.query('DELETE FROM pessoas WHERE id = ' + id + ' limit 1', (err) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve()
-      }
-    })
-  })
+const deleteById = async (db, id) => {
+  await db('pessoas').where({ id }).del()
 }
 
-const create = (connection, data) => {
-  return new Promise((resolve, reject) => {
-    connection.query(`INSERT INTO pessoas (nome, nascimento, cargo) VALUES ('${data.nome}', '${data.nascimento}', '${data.cargo}')`, (err) => {
-      if (err) {
-        reject(err)
-      } else {
-        resolve()
-      }
-    })
-  })
+const create = async (db, data) => {
+  await db('pessoas').insert({ ...data })
+}
+
+const update = async (db, id, data) => {
+  await db('pessoas').where({ id }).update({ ...data })
 }
 
 module.exports = {
   findAll,
   findById,
   deleteById,
-  create
+  create,
+  update
 }
