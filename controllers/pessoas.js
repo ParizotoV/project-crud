@@ -1,8 +1,12 @@
 const pessoas = require('../models/pessoas')
 
 const index = async (db, req, res) => {
-  const results = await pessoas.findAll(db)
-  res.render('pessoas/index', { pessoas: results })
+	const params = {
+		pageSize: req.query.pageSize || 10,
+		currentPage: req.query.page || 0
+	}
+	const results = await pessoas.findAll(db, params)
+  res.render('pessoas/index', { results })
 }
 
 const deleteById = async (db, req, res) => {
